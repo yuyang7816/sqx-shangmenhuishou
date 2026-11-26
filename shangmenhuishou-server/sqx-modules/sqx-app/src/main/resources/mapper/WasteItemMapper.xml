@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sqx.app.waste.item.db.mapper.WasteItemMapper">
+
+    <select id="pageInfo" resultType="com.sqx.app.waste.item.domain.vo.WasteItemVo">
+        SELECT
+            wi.*,
+            wc.`name` as categoryName,
+            wc.parent_id as categoryParentId
+        FROM
+            waste_item wi
+        LEFT JOIN waste_category wc ON wi.category_id = wc.id
+        <where>
+            <if test="param.categoryId != null">
+                and wc.id = #{param.categoryId}
+            </if>
+            <if test="param.categoryName != null and param.categoryName != ''">
+                and wc.name like concat('%', #{param.categoryName} ,'%')
+            </if>
+            <if test="param.name != null and param.name != ''">
+                and wi.name like concat('%', #{param.name} ,'%')
+            </if>
+            <if test="param.city != null and param.city != ''">
+                and wi.city = #{param.city}
+            </if>
+        </where>
+        ORDER BY wi.create_time DESC
+    </select>
+
+    <select id="info" resultType="com.sqx.app.waste.item.domain.vo.WasteItemVo">
+        SELECT
+            wi.*,
+            wc.`name` AS categoryName
+        FROM
+            waste_item wi
+        LEFT JOIN waste_category wc ON wi.category_id = wc.id
+        where wi.id = #{id}
+    </select>
+    <select id="pageByCategoryIds" resultType="com.sqx.app.waste.item.domain.vo.WasteItemVo">
+        SELECT
+            wi.*,
+            wc.`name` AS categoryName
+        FROM
+            waste_item wi
+        LEFT JOIN waste_category wc ON wi.category_id = wc.id
+        where wi.category_id = #{categoryId}
+    </select>
+</mapper>

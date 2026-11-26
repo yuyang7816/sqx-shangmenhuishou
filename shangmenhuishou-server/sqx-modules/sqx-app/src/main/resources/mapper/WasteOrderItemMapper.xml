@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sqx.app.waste.order.item.db.mapper.WasteOrderItemMapper">
+
+    <select id="sumAmount" resultType="java.math.BigDecimal">
+        SELECT
+            IFNULL(SUM(price), 0)
+        FROM
+            `waste_order` wo
+        LEFT JOIN waste_order_item woi ON wo.id = woi.order_id
+        <where>
+            <if test="param != null and param.startTime != null">
+                and wo.create_time >= #{param.startTime}
+            </if>
+            <if test="param != null and param.endTime != null">
+                and #{param.endTime} >= wo.create_time
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sqx.app.waste.order.order.db.mapper.WasteOrderMapper">
+
+    <select id="information" resultType="com.sqx.app.waste.order.order.domain.vo.WasteOrderVo">
+        SELECT
+            *,
+            ST_Distance_Sphere (POINT (#{lng}, #{lat}), POINT (lng, lat)) AS distance
+        FROM
+            waste_order
+        WHERE id = #{id}
+    </select>
+
+    <select id="pageInfo" resultType="com.sqx.app.waste.order.order.domain.vo.WasteOrderVo">
+        SELECT
+            o.*,
+            u.user_name,
+            wu.user_name AS wasteUserName
+        FROM
+            waste_order o
+        LEFT JOIN tb_user u ON o.user_id = u.user_id
+        LEFT JOIN tb_user wu ON o.waste_user_id = wu.user_id
+        <where>
+            <if test="param.userId != null">
+                and o.user_id = #{param.userId}
+            </if>
+            <if test="param.orderNo != null and param.orderNo != ''">
+                and p.order_no like concat('%', #{param.orderNo} ,'%')
+            </if>
+            <if test="param.status != null">
+                and o.status = #{param.status}
+            </if>
+            <if test="param.wasteUserId != null">
+                and o.waste_user_id = #{param.wasteUserId}
+            </if>
+            <if test="param.wasteUserName != null and param.wasteUserName != ''">
+                and wu.user_name like concat('%', #{param.wasteUserName} ,'%')
+            </if>
+            <if test="param.userName != null and param.userName != ''" >
+                and u.user_name like concat('%', #{param.userName} ,'%')
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sqx.app.deposit.db.mapper.DepositRecordMapper">
+
+    <select id="pageInfo" resultType="com.sqx.app.deposit.domain.vo.DepositRecordVo">
+        SELECT
+            dr.*,
+            u.user_name,
+            u.avatar,
+            u.phone
+        FROM
+            deposit_record dr
+        LEFT JOIN tb_user u ON dr.user_id = u.user_id
+        <where>
+            <if test="param.userId != null">
+                and dr.user_id = #{param.userId}
+            </if>
+            <if test="param.direction != null">
+                and dr.direction = #{param.direction}
+            </if>
+            <if test="param.userName != null and param.userName != ''">
+                and u.user_name like concat('%', #{param.userName} ,'%')
+            </if>
+            <if test="param.phone != null and param.phone != ''">
+                and u.phone like concat('%', #{param.phone} ,'%')
+            </if>
+        </where>
+        ORDER BY dr.create_time DESC
+    </select>
+</mapper>
